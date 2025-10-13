@@ -3,6 +3,7 @@ import './App.css'
 import TagList from './TagList'
 import PostList from './PostList'
 import CreateTagForm from './components/tags/CreateTagForm';
+import CreatePostForm from './components/Posts/CreatePostForm';
 
 
 const fetchTags = fetch('http://localhost:5192/api/tag').then(res => res.json());
@@ -21,6 +22,7 @@ function App() {
     Hello world!
     </h1>
     <CreateTagForm></CreateTagForm>
+    <CreatePostForm fetchTags={fetchTags}></CreatePostForm>
       {/* <Suspense fallback={<h2>Loading Posts...</h2>}>
         <PostList fetchPosts={fetchPostData}></PostList>
       </Suspense>
