@@ -56,7 +56,7 @@ export default function PostList({fetchPosts}){
         {!showCreateForm && (
             <div className="space-y-5">
             {posts.map((post, index) => (
-            <Post key={index} title={post.title} content={post.content} />
+            <Post key={index} id={post.id} title={post.title} content={post.content} />
             ))}
             </div>
         )}

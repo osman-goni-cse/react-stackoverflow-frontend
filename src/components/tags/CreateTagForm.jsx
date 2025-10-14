@@ -36,7 +36,7 @@ export default function CreateTagForm(){
         
     }
     return (
-        <div className="max-w-md mx-auto p-4 border rounded shadow">
+        <div className="max-w-md mx-auto p-4">
             <h2 className="text-xl font-bold mb-4">Tag Manager</h2>
     
             {/* ✅ Create Tag Form */}

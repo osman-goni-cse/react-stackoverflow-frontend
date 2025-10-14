@@ -1,10 +1,11 @@
+import { Link } from "react-router";
 
-export default function Post({ title, content, tags = [], votes = 0, comments = 0, author = "Anonymous", asked = "Just now" }) {
+export default function Post({ id, title, content, tags = [], votes = 0, comments = 0, author = "Anonymous", asked = "Just now" }) {
     return (
       <div className="border border-gray-300 rounded-lg p-5 bg-white shadow-sm hover:shadow-md transition-shadow">
         {/* Title */}
         <h2 className="text-lg font-semibold text-blue-600 hover:underline cursor-pointer mb-2">
-          {title}
+          <Link to={`/posts/${id}`}>{title}</Link>
         </h2>
   
         {/* Content */}

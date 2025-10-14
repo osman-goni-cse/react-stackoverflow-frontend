@@ -8,6 +8,7 @@ import CreateTagForm from './components/tags/CreateTagForm.jsx'
 import CreatePostForm from './components/Posts/CreatePostForm.jsx'
 import Root from './components/Root/Root.jsx'
 import PostList from './PostList.jsx'
+import PostDetail from './components/Posts/PostDetail.jsx'
 
 /* **
 * Have to move separte central component
@@ -43,6 +44,11 @@ const router = createBrowserRouter([
       {
         path: "/posts",
         element: <PostList fetchPosts={fetchPosts()}></PostList>
+      },
+      {
+        path: "/posts/:id",
+        loader: ({params}) => fetch('http://localhost:5192/api/post/' + params.id).then(res => res.json()),
+        element: <PostDetail></PostDetail>
       },
       {
         path: "/posts/create",
