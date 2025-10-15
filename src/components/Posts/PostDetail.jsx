@@ -1,9 +1,28 @@
 import { MessageCircle, ThumbsUp } from "lucide-react";
+import { useState } from "react";
 import { useLoaderData } from "react-router";
 
 export default function PostDetail(){
 
+    const [answerBody, setAnswerBody] = useState("");
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const post = useLoaderData();
+
+    console.log(post);
+
+    const handleSubmit = async () => {
+      const payload = {
+        postId : post.id,
+        body : answerBody,
+        userId : post.userId, // should be logged in user
+      }
+      await fetch(`http://localhost:5192/api/answer`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload), // sample userId
+      });
+      window.location.reload();
+    };
 
     return (
         <div className="max-w-5xl mx-auto mt-10 px-6">
@@ -84,6 +103,33 @@ export default function PostDetail(){
                 </div>
               ))}
             </div>
+          </div>
+          {/* Divider */}
+          <div className="border-t border-gray-300 my-10"></div>
+
+          {/* Your Answer Section */}
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+            <h3 className="text-xl font-semibold text-gray-900 mb-4">
+              Your Answer
+            </h3>
+
+            <form onSubmit={handleSubmit}>
+              <textarea
+                value={answerBody}
+                onChange={(e) => setAnswerBody(e.target.value)}
+                placeholder="Write your answer here..."
+                rows={6}
+                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 mb-4 resize-y"
+              ></textarea>
+
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors duration-150"
+              >
+                {isSubmitting ? "Posting..." : "Post Your Answer"}
+              </button>
+            </form>
           </div>
         </div>
       );
