@@ -9,6 +9,7 @@ import CreatePostForm from './components/Posts/CreatePostForm.jsx'
 import Root from './components/Root/Root.jsx'
 import PostList from './PostList.jsx'
 import PostDetail from './components/Posts/PostDetail.jsx'
+import Login from './components/Users/Login.jsx'
 
 /* **
 * Have to move separte central component
@@ -53,6 +54,10 @@ const router = createBrowserRouter([
       {
         path: "/posts/create",
         element: <CreatePostForm fetchTags={fetchTags}></CreatePostForm>
+      },
+      {
+        path: "/login",
+        Component: Login
       }
     ]
   },

@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
-export default function CreateTagForm(){
+export default function CreateTagForm({onClose}){
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
     async function handleSubmit(e){
         e.preventDefault();
@@ -16,6 +18,7 @@ export default function CreateTagForm(){
 
         try {
             const res = await fetch('http://localhost:5192/api/tag', {
+                credentials: 'include',
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -25,13 +28,18 @@ export default function CreateTagForm(){
             if(res.ok){
                 setName("");
                 setDescription("");
-                alert("Tag created successfully!");
+                onClose();
+                navigate("/tags");
             } else {
                 alert("Failed to create tag.");
             }
         }catch(err){
             console.error("Error creating tag:", err);
             alert("Error creating tag.");
+        } finally {
+            setLoading(false);
+            onClose();
+            navigate("/tags");
         }
         
     }

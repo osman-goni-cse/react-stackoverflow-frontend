@@ -1,5 +1,6 @@
-import { FileText, Home, Tag, Users } from "lucide-react";
-import { NavLink } from "react-router";
+import { FileText, Home, Tag, Users, User, LogIn, LogOut } from "lucide-react";
+import { useEffect, useState } from "react";
+import { NavLink, useNavigate } from "react-router";
 
 export default function Sidebar() {
     const menuItems = [
@@ -8,7 +9,35 @@ export default function Sidebar() {
         { label: 'Tags', href: '/tags', icon: Tag },
         { label: 'Users', href: '/users', icon: Users }
       ];
-    
+
+      const [user, setUser] = useState(null);
+      const [dropdownOpen, setDropdownOpen] = useState(false);
+      const navigate = useNavigate();
+
+      useEffect(() => {
+        fetch("http://localhost:5192/api/auth/me", { credentials: "include" })
+          .then(res => res.json())
+          .then(data => {
+            if (data.isLoggedIn) {
+              setUser(data.userInfo);
+            }
+          })
+          .catch(err => console.error(err));
+      }, []);
+
+      const handleLogout = () => {
+        fetch("http://localhost:5192/api/auth/logout", {
+          method: "POST",
+          credentials: "include",
+        })
+        .then(() => {
+            setUser(null);       // reset frontend state
+            navigate("/login");  // redirect to login page
+          })
+          .catch(err => console.error(err));
+      };
+
+
       return (
         <aside className="w-64 bg-white border-r border-gray-200 h-screen sticky top-0">
           <div className="p-4">
@@ -30,6 +59,47 @@ export default function Sidebar() {
                     )
                 })
             }
+          </div>
+          
+          {/* Bottom Section */}
+          <div className="p-4 border-t border-gray-200 relative">
+            {user ? (
+              <div>
+                <button
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  className="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded w-full"
+                >
+                  <User className="w-4 h-4 mr-3 text-gray-500" />
+                  {user.username}
+                </button>
+
+                {dropdownOpen && (
+                  <div className="mt-2 bg-white border rounded shadow-md absolute left-4 w-52 z-10">
+                    <NavLink
+                      to="/profile"
+                      className="block px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      View Profile
+                    </NavLink>
+                    <button
+                      onClick={handleLogout}
+                      className="flex items-center w-full px-3 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
+                      <LogOut className="w-4 h-4 mr-2 text-gray-500" />
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <NavLink
+                to="/login"
+                className="flex items-center px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 rounded transition-colors duration-150"
+              >
+                <LogIn className="w-4 h-4 mr-3 text-gray-500" />
+                Sign In
+              </NavLink>
+            )}
           </div>
         </aside>
       );
