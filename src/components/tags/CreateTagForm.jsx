@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 
-export default function CreateTagForm({onClose}){
+export default function CreateTagForm({onClose, onTagCreated}) {
     const [name, setName] = useState("");
     const [description, setDescription] = useState("");
     const [loading, setLoading] = useState(false);
@@ -29,6 +29,7 @@ export default function CreateTagForm({onClose}){
                 setName("");
                 setDescription("");
                 onClose();
+                onTagCreated(newTag);
                 navigate("/tags");
             } else {
                 alert("Failed to create tag.");

@@ -1,12 +1,12 @@
-import { use, useState } from "react";
+import { use, useEffect, useState } from "react";
 import Tag from "./Tag";
 import { Plus } from "lucide-react";
 import CreateTagForm from "./components/tags/CreateTagForm";
 
 export default function TagList({fetchTags}){
     // console.log(fetchTags);
-    const tags = use(fetchTags);
-
+    // const tags = use(fetchTags);
+    const [tags, setTags] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleDelete = (tagName) => {
@@ -18,6 +18,23 @@ export default function TagList({fetchTags}){
     };
 
     const handleCloseModal = () => {
+        setIsModalOpen(false);
+    };
+
+    useEffect(() => {
+        const loadTags = async () => {
+            try {
+                const data = await fetchTags;
+                setTags(data);
+            }catch(err){
+                console.error("Error fetching tags:", err);
+            }
+        };
+        loadTags();
+    }, [fetchTags]);
+
+    const handleTagCreated = (newTag) => {
+        setTags((prevTags) => [...prevTags, newTag]);
         setIsModalOpen(false);
     };
     
@@ -92,7 +109,7 @@ export default function TagList({fetchTags}){
                 </button>
 
                 {/* Modal body: your CreateTagForm */}
-                <CreateTagForm onClose={handleCloseModal} />
+                <CreateTagForm onClose={handleCloseModal} onTagCreated={handleTagCreated} />
                 </div>
             </div>
             </>
