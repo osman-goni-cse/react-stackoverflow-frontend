@@ -10,6 +10,7 @@ import Root from './components/Root/Root.jsx'
 import PostList from './PostList.jsx'
 import PostDetail from './components/Posts/PostDetail.jsx'
 import Login from './components/Users/Login.jsx'
+import Register from './components/Users/Register.jsx'
 
 /* **
 * Have to move separte central component
@@ -58,6 +59,10 @@ const router = createBrowserRouter([
       {
         path: "/login",
         Component: Login
+      },
+      {
+        path: "/register",
+        Component: Register
       }
     ]
   },
