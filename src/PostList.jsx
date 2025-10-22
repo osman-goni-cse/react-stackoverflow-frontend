@@ -1,4 +1,4 @@
-import { use, useState } from "react";
+import { use, useEffect, useState } from "react";
 import Post from "./Post";
 import { Plus } from "lucide-react";
 import CreatePostForm from "./components/Posts/CreatePostForm";
@@ -7,8 +7,8 @@ const fetchTags = fetch('http://localhost:5192/api/tag').then(res => res.json())
 
 
 export default function PostList({fetchPosts}){
-    const posts = use(fetchPosts);
-    
+    // const posts = use(fetchPosts);
+    const [posts, setPosts] = useState([]);
     const [showCreateForm, setShowCreateForm] = useState(false);
 
     const handleCreateClick = () => {
@@ -17,6 +17,22 @@ export default function PostList({fetchPosts}){
 
     const handleFormClose = () => {
         setShowCreateForm(false);
+    };
+
+    useEffect(() => {
+        const loadPosts = async () => {
+            try {
+                const data = await fetchPosts;
+                setPosts(data);
+            }catch(err){
+                console.error("Error fetching tags:", err);
+            }
+        };
+        loadPosts();
+    }, [fetchPosts]);
+
+    const handlePostCreated = (newPost) => {
+        setPosts((prevPosts) => [...prevPosts, newPost]);
     };
 
     return (
@@ -41,7 +57,7 @@ export default function PostList({fetchPosts}){
         {/* Inline Create Post Form */}
         {showCreateForm && (
             <div className="mb-6">
-            <CreatePostForm fetchTags={fetchTags} onClose={handleFormClose} />
+            <CreatePostForm fetchTags={fetchTags} onClose={handleFormClose} onPostCreated={handlePostCreated} />
             <button
                 onClick={() => setShowCreateForm(false)}
                 className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded text-sm font-medium"

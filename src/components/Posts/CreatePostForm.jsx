@@ -1,11 +1,14 @@
 import { use, useState } from "react"
+import { useNavigate } from "react-router";
 
-export default function CreatePostForm({fetchTags}) {
+export default function CreatePostForm({fetchTags, onClose, onPostCreated}) {
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
     const [userId, setUserId] = useState(8);
     const [selectedTagIds, setSelectedTagIds] = useState([]);
     const [loading, setLoading] = useState(false);
+
+    const navigate = useNavigate();
 
     const availableTags = use(fetchTags);
 
@@ -50,7 +53,10 @@ export default function CreatePostForm({fetchTags}) {
         });
 
         if(res.ok) {
-            alert("Post Created Successfully");
+            onPostCreated(payload);
+            onClose();
+            navigate("/posts");
+            // alert("Post Created Successfully");
         }else {
             alert("Post is not created");
         }
