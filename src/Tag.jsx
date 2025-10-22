@@ -1,6 +1,7 @@
 import { Trash2 } from "lucide-react";
 
-export default function Tag({name, description, onDelete}){
+export default function Tag({id, name, description, onDelete}){
+    const tag = {id, name, description};
     
     return (
         <div className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow duration-200">
@@ -10,7 +11,7 @@ export default function Tag({name, description, onDelete}){
             </h3>
             {onDelete && (
               <button
-                onClick={() => onDelete(name)}
+                onClick={() => onDelete(tag)}
                 className="text-gray-400 hover:text-red-500 transition-colors"
               >
                 <Trash2 className="w-4 h-4" />

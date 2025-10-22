@@ -8,10 +8,41 @@ export default function TagList({fetchTags}){
     // const tags = use(fetchTags);
     const [tags, setTags] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [tagToDelete, setTagToDelete] = useState(null);
 
-    const handleDelete = (tagName) => {
-        console.log(`Delete tag: ${tagName}`);
+    const handleDelete = (tag) => {
+        setTagToDelete(tag);
+        setIsDeleteModalOpen(true);
     };
+
+    const handleCancelDelete = () => {
+        setIsDeleteModalOpen(false);
+        setTagToDelete(null);
+    };
+
+    const handleConfirmDelete = async () => {
+        try {
+            const res = await fetch(`http://localhost:5192/api/tag/${tagToDelete.id}`, {
+                method: "DELETE",
+                credentials: "include"
+            });
+    
+            if (res.ok) {
+                // Remove the tag from local state to update UI immediately
+                setTags(prev => prev.filter(t => t.id !== tagToDelete.id));
+                setIsDeleteModalOpen(false); // close modal
+                setTagToDelete(null);
+            } else {
+                alert("Failed to delete tag.");
+            }
+        } catch (err) {
+            console.error("Error deleting tag:", err);
+            alert("Error deleting tag.");
+        }
+    };
+    
+    
 
     const handleCreateTag = () => {
         setIsModalOpen(true);
@@ -37,7 +68,7 @@ export default function TagList({fetchTags}){
         setTags((prevTags) => [...prevTags, newTag]);
         setIsModalOpen(false);
     };
-    
+
     return (
     <div className="w-full bg-gray-50 min-h-screen p-6">
         <div className="">
@@ -78,6 +109,7 @@ export default function TagList({fetchTags}){
             tags.map(tag => (
                 <Tag
                 key={tag.id}
+                id={tag.id}
                 name={tag.name}
                 description={tag.description}
                 onDelete={handleDelete}
@@ -114,6 +146,37 @@ export default function TagList({fetchTags}){
             </div>
             </>
         )}
+
+        {isDeleteModalOpen && (
+            <>
+                {/* Overlay */}
+                <div className="fixed inset-0 bg-opacity-50 backdrop-blur-[1px] z-40"></div>
+
+                {/* Modal */}
+                <div className="fixed inset-0 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded shadow-lg max-w-sm w-full">
+                        <h2 className="text-lg font-bold mb-4">Confirm Delete</h2>
+                        <p>Are you sure you want to delete the tag "{tagToDelete.name}"?</p>
+
+                        <div className="mt-6 flex justify-end space-x-2">
+                            <button
+                                onClick={handleCancelDelete}
+                                className="px-4 py-2 border rounded"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleConfirmDelete}
+                                className="px-4 py-2 bg-red-600 text-white rounded"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </>
+        )}
+
     </div>
     );
 }
