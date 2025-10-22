@@ -17,6 +17,7 @@ export default function PostDetail(){
         userId : post.userId, // should be logged in user
       }
       await fetch(`http://localhost:5192/api/answer`, {
+        credentials: "include",
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload), // sample userId

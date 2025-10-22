@@ -43,22 +43,37 @@ export default function CreatePostForm({fetchTags, onClose, onPostCreated}) {
         console.log("POST request", payload);
 
 
+        try {
 
-        const res = await fetch("http://localhost:5192/api/post", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        });
+            const res = await fetch("http://localhost:5192/api/post", {
+                credentials: 'include',
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
 
-        if(res.ok) {
-            onPostCreated(payload);
-            onClose();
-            navigate("/posts");
-            // alert("Post Created Successfully");
-        }else {
-            alert("Post is not created");
+            if(res.ok) {
+                onPostCreated(payload);
+                onClose();
+                navigate("/posts");
+                // alert("Post Created Successfully");
+            }else if (res.status === 401) {
+                // User not authenticated
+                alert("You must be logged in to create a post.");
+                navigate("/login"); // optional: redirect to login page
+            } else if (res.status === 403) {
+                // User lacks permission
+                alert("You do not have permission to create a post.");
+            } else {
+                // Other errors
+                const errorText = await res.text(); // backend message
+                alert(`Failed to create post: ${errorText}`);
+            }
+        }catch(err) {
+            console.error("Error creating post:", err);
+            alert("Error creating post.");
         }
     }
 
