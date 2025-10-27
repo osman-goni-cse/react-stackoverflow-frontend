@@ -7,6 +7,7 @@ export default function CreatePostForm({fetchTags, onClose, onPostCreated}) {
     const [userId, setUserId] = useState(8);
     const [selectedTagIds, setSelectedTagIds] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [files, setFiles] = useState([]);
 
     const navigate = useNavigate();
 
@@ -24,6 +25,10 @@ export default function CreatePostForm({fetchTags, onClose, onPostCreated}) {
         )
     }
 
+    const handleFileChange = (e) => {
+        setFiles(Array.from(e.target.files));
+    }
+
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -33,14 +38,20 @@ export default function CreatePostForm({fetchTags, onClose, onPostCreated}) {
             return;
         }
 
-        const payload = {
-            title, 
-            content, 
-            userId, 
-            tagIds: selectedTagIds
-        };
+        // const payload = {
+        //     title, 
+        //     content, 
+        //     userId, 
+        //     tagIds: selectedTagIds
+        // };
 
-        console.log("POST request", payload);
+        // console.log("POST request", payload);
+        const formData = new FormData();
+        formData.append("Title", title);
+        formData.append("Content", content);
+        formData.append("UserId", userId);
+        selectedTagIds.forEach(tagId => formData.append("TagIds", tagId));
+        files.forEach(file => formData.append("Files", file));
 
 
         try {
@@ -48,14 +59,16 @@ export default function CreatePostForm({fetchTags, onClose, onPostCreated}) {
             const res = await fetch("http://localhost:5192/api/post", {
                 credentials: 'include',
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
+                // headers: {
+                //     'Content-Type': 'application/json'
+                // },
+                body: formData
             });
 
             if(res.ok) {
-                onPostCreated(payload);
+                const createdPost = await res.json();
+
+                onPostCreated(createdPost);
                 onClose();
                 navigate("/posts");
                 // alert("Post Created Successfully");
@@ -126,7 +139,22 @@ export default function CreatePostForm({fetchTags, onClose, onPostCreated}) {
                         })
                     }
                 </div>
-        
+                <div className="mb-3">
+                    <label className="block font-medium mb-1">Attach Files</label>
+                    <input
+                        type="file"
+                        multiple
+                        onChange={handleFileChange}
+                        className="w-full border p-2 rounded"
+                    />
+                    {files.length > 0 && (
+                        <ul className="mt-2 text-sm text-gray-600">
+                        {files.map((f) => (
+                            <li key={f.name}>{f.name}</li>
+                        ))}
+                        </ul>
+                    )}
+                </div>
                 <button
                     type="submit"
                     disabled={loading}
