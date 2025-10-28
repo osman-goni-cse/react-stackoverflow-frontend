@@ -1,6 +1,7 @@
 import { FileText, Home, Tag, Users, User, LogIn, LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { NavLink, useNavigate } from "react-router";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Sidebar() {
     const menuItems = [
@@ -10,7 +11,10 @@ export default function Sidebar() {
         { label: 'Users', href: '/users', icon: Users }
       ];
 
-      const [user, setUser] = useState(null);
+      // const [user, setUser] = useState(null);
+      const { user } = useAuth();
+      const { refreshUser } = useAuth();
+
       const [dropdownOpen, setDropdownOpen] = useState(false);
       const navigate = useNavigate();
 
@@ -18,25 +22,27 @@ export default function Sidebar() {
         fetch("http://localhost:5192/api/auth/me", { credentials: "include" })
           .then(res => res.json())
           .then(data => {
-            if (data.isLoggedIn) {
-              setUser(data.userInfo);
-            }
+            // if (data.isLoggedIn) {
+            //   setUser(data.userInfo);
+            // }
           })
           .catch(err => console.error(err));
       }, []);
 
-      const handleLogout = () => {
-        fetch("http://localhost:5192/api/auth/logout", {
-          method: "POST",
-          credentials: "include",
-        })
-        .then(() => {
-            setUser(null);       // reset frontend state
-            navigate("/login");  // redirect to login page
-          })
-          .catch(err => console.error(err));
+      const handleLogout = async () => {
+        try {
+          await fetch("http://localhost:5192/api/auth/logout", {
+            method: "POST",
+            credentials: "include",
+          });
+      
+          await refreshUser(); // refresh user state in context
+          navigate("/login");  // redirect to login page
+        } catch (err) {
+          console.error("Logout failed:", err);
+        }
       };
-
+      
 
       return (
         <aside className="w-64 bg-white border-r border-gray-200 h-screen sticky top-0">

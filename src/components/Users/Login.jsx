@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router';
+import { useAuth } from '../../context/AuthContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+
+  const { refreshUser } = useAuth();
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -19,8 +25,15 @@ const Login = () => {
         { email, password },
         { withCredentials: true } // important for HttpOnly cookies
       );
-
-      setMessage(response.data.message || 'Login successful');
+      
+      if (response.statusText === 'OK') {
+        setMessage(response.data.message || 'Login successful');
+        await refreshUser();
+        navigate("/posts");
+      } else {
+        const errorText = await response.text();
+        alert(`Login failed: ${errorText}`);
+      }
       // No need to save token in localStorage if using HttpOnly cookies
     } catch (err) {
       if (err.response) {

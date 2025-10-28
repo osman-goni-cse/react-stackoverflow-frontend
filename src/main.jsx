@@ -11,6 +11,7 @@ import PostList from './PostList.jsx'
 import PostDetail from './components/Posts/PostDetail.jsx'
 import Login from './components/Users/Login.jsx'
 import Register from './components/Users/Register.jsx'
+import { AuthProvider } from './context/AuthContext.jsx'
 
 /* **
 * Have to move separte central component
@@ -71,6 +72,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router}></RouterProvider>
+    <AuthProvider>
+      <RouterProvider router={router}></RouterProvider>
+    </AuthProvider>
   </StrictMode>,
 )
