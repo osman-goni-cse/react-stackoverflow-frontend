@@ -33,6 +33,18 @@ export default function PostDetail(){
             <h1 className="text-3xl font-semibold text-gray-900 mb-3">
               {post.title}
             </h1>
+
+            <div className="flex flex-wrap gap-2 mt-2">
+              {post.files?.map(file => (
+                <img
+                  key={file.id}
+                  src={`http://localhost:5192/uploads/${file.fileName}`}
+                  alt={file.originalFileName}
+                  className="object-cover rounded-lg shadow"
+                />
+              ))}
+            </div>
+
     
             {/* Question Meta Info */}
             <div className="flex items-center justify-between mb-4">
